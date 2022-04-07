@@ -66,7 +66,7 @@ def main_formula(xn, yn, exx, exy):
         sys.exit(1)
 
     # точность
-    e = 0.005
+    e = 0.0005
 
     # использование основной формулы для расчета
     xn1 = xn - (an / jn)
@@ -79,9 +79,10 @@ def main_formula(xn, yn, exx, exy):
     return main_formula(xn1, yn1, exx, exy)
 
 
+# x = 0.9561, y = 0.08791
 # начальное приближение
-x0 = 0.85
-y0 = -0.08
+x0 = 0.9526
+y0 = 0.0791
 
 # выражения в системе
 # f(x,y)
