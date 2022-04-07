@@ -4,10 +4,10 @@ from sympy import cos, symbols, diff, sin
 
 
 # вариант 9
-# f(x,y) = cos(y-1) + y = 0.7
-# g(x,y) = siny + 2x = 2
+# f(x,y) = y - x^2
+# g(x,y) = x^2 + y^ 2 - 4
 
-
+# вычисления частных производных
 def f_dy(y_n, expression):
     x, y = symbols('x y')
     part_derivative_y = diff(expression, y).subs(y, y_n)
@@ -15,7 +15,7 @@ def f_dy(y_n, expression):
 
 
 def g_dy(y_n, expression):
-    x, y = symbols('x, y')
+    x, y = symbols('x y')
     part_derivative_y = diff(expression, y).subs(y, y_n)
     return part_derivative_y
 
@@ -32,51 +32,64 @@ def g_dx(x_n, expression):
     return part_derivative_x
 
 
+# An
 def a_n(f, g, fdy, gdy, x_n, y_n):
     a = f.subs(x, x_n).subs(y, y_n) * gdy - g.subs(x, x_n).subs(y, y_n) * fdy
     return a
 
 
+# Bn
 def b_n(f, g, fdx, gdx, x_n, y_n):
     b = fdx * g.subs(x, x_n).subs(y, y_n) - f.subs(x, x_n).subs(y, y_n) * gdx
     return b
 
 
+# Jn
 def j_n(fdy, gdy, fdx, gdx):
-    j = fdx * gdy - fdy * gdx
+    j = (fdx * gdy) - (fdy * gdx)
     return j
 
 
-def main_formula(xn, yn, a__n, b__n, j__n):
-    if j__n == 0:
+# основные вычисления и формула
+def main_formula(xn, yn, exx, exy):
+    print(f"xn = {xn} \nyn = {yn}")
+    fdy = f_dy(yn, exy)
+    fdx = f_dx(xn, exy)
+    gdy = g_dy(yn, exx)
+    gdx = g_dx(xn, exx)
+
+    an = a_n(exy, exy, fdy, gdy, xn, yn)
+    bn = b_n(exy, exx, fdx, gdx, xn, yn)
+    jn = j_n(fdy, gdy, fdx, gdx)
+
+    if (jn == 0):
         sys.exit(1)
 
-    print(f"xn = {xn} \nyn = {yn}")
+    # точность
     e = 0.005
 
-    xn1 = xn - (a__n / j__n)
-    yn1 = yn - (b__n / j__n)
+    # использование основной формулы для расчета
+    xn1 = xn - (an / jn)
+    yn1 = yn - (bn / jn)
 
-    print(f"xn+1 = {xn1}\nyn+1={yn1}\n")
     if (abs(xn1 - xn) <= e) and (abs(yn1 - yn) <= e):
         return [xn1, yn1]
-    return main_formula(xn1, yn1, a__n, b__n, j__n)
+
+    print(f"xn+1 = {xn1}\nyn+1 = {yn1}\n")
+    return main_formula(xn1, yn1, exx, exy)
 
 
-x0 = 1
-y0 = 0.1
+# начальное приближение
+x0 = 0.85
+y0 = -0.08
 
+# выражения в системе
+# f(x,y)
 expression_y = cos(y - 1) + y - 0.7
-expression_x = sin(y) + 2 * x - 2
+# g(x,y)
+expression_x = sin(y) + 2 * x -2
 
-derivative_f_y = f_dy(y0, expression_y)
-derivative_g_y = g_dy(y0, expression_x)
-derivative_f_x = f_dx(x0, expression_y)
-derivative_g_x = g_dx(x0, expression_x)
-
-an = a_n(expression_y, expression_x, derivative_f_y, derivative_g_y, x0, y0)
-bn = b_n(expression_y, expression_x, derivative_f_x, derivative_g_x, x0, y0)
-jn = j_n(derivative_f_y, derivative_g_y, derivative_f_x, derivative_g_x)
-result = main_formula(x0, y0, an, bn, jn)
+# вызовы всех функций
+result = main_formula(x0, y0, expression_x, expression_y)
 
 print(f"результат: {result}")
